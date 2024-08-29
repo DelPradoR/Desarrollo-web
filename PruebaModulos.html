@@ -1,0 +1,125 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Simulacion de Round Robin</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+        <div class="container mt-5">
+            <div id="resultado" class="row mt-4">
+            </div>
+        </div>
+
+        <script lang="javascript">
+            const lineasDeCodigo = [
+                "a = 1 + 2;",
+                "b = 3 + 4;",
+                "c = 5 + 6;",
+                "d = 7 + 8;",
+                "e = 9 + 10;",
+                "f = 11 + 12;",
+                "g = 13 + 14;",
+                "h = 15 + 16;",
+                "i = 17 + 18;",
+                "console.log('1 + 2');",
+                "console.log('3 + 4');",
+                "console.log('5 + 6');",
+                "console.log('7 + 8');",
+                "console.log('9 + 10');",
+                "console.log('11 + 12');",
+                "console.log('13 + 14');",
+                "console.log('15 + 16');",
+                "console.log('17 + 18');",
+                "console.log(a);",
+                "console.log(b);",
+                "console.log(c);",
+                "console.log(d);",
+                "console.log(e);",
+                "console.log(f);",
+                "console.log(g);",
+                "console.log(h);",
+                "console.log(i);"
+            ];
+            class Proceso {
+                constructor(id, codigo) {
+                    this.id = id;
+                    this.codigo = codigo;
+                    this.lineaActual = 0;
+                }
+
+                ejecutarLinea() {
+                    if (this.lineaActual < this.codigo.length) {
+                        const mensaje = `Proceso ${this.id}: Línea de código: ${this.codigo[this.lineaActual]}`;
+                        this.lineaActual++;
+                        return mensaje;
+                    } else {
+                        return `Proceso ${this.id}: Terminado`;
+                    }
+                }
+
+                isFinalizado() {
+                    return this.lineaActual >= this.codigo.length;
+                }
+            }
+
+            function inicializar(numeroProcesos) {
+                let procesos = [];
+                let numeroProceso = 1;
+
+                for (let i = 0; i < numeroProcesos; i++) {
+                    let codigo = [
+                        lineasDeCodigo[i * 3],       
+                        lineasDeCodigo[i * 3 + 1],
+                        lineasDeCodigo[i * 3 + 2]
+                    ];
+                    procesos.push(new Proceso(numeroProceso++, codigo));
+                }
+
+                return procesos;
+            }
+
+            function iniciarSimulacion(procesos) {
+                let procesosPendientes = procesos.slice();
+                let turno = 0;
+
+                while (procesosPendientes.length > 0) {
+                    let procesoActual = procesosPendientes[turno];
+
+                    let resultado = procesoActual.ejecutarLinea();
+                    mostrarEnCard(resultado);
+
+                    if (procesoActual.isFinalizado()) {
+                        procesosPendientes.splice(turno, 1);
+                    } else {
+                        turno = (turno + 1) % procesosPendientes.length;
+                    }
+                }
+
+                mostrarEnCard("Todos los procesos han finalizado.");
+            }
+
+            function mostrarEnCard(mensaje) {
+                const card = `
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">${mensaje}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById("resultado").innerHTML += card;
+            }
+
+           
+            document.addEventListener("DOMContentLoaded", () => {
+                let numeroProcesos = prompt("Ingresa el número de procesos:");
+                numeroProcesos = parseInt(numeroProcesos) || 3;
+                const procesos = inicializar(numeroProcesos);
+                iniciarSimulacion(procesos);
+            });
+        </script>
+    </body>
+</html>
